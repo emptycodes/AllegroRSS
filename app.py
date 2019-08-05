@@ -5,8 +5,8 @@ import time
 import rfeed
 
 import config
+from refresh_access_token import refresh_access_token
 from allegro import search
-from allegro.refresh_access_token import refresh_access_token
 
 from rss.description_builder import description_builder
 
