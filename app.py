@@ -1,4 +1,5 @@
 from flask import Flask, request, Response
+from urllib.parse import unquote
 import logging
 import msgpack
 import time
@@ -89,6 +90,18 @@ def listing():
 @app.route("/kategoria/<category_id>", methods=['GET'])
 def kategoria(category_id):
     return generate_rss(request.full_path)
+
+@app.route("/generateRSS.html", methods=['GET'])
+def generaterss_html():
+    url = unquote(request.args.get("url"))
+
+    if "https://allegro.pl" in url:
+        full_path = url.split("https://allegro.pl")[1]
+
+    else:
+        return ('', 422)
+
+    return generate_rss(full_path)
 
 if __name__ == "__main__":
     app.run(host=settings["server"]["rss_host"], 
