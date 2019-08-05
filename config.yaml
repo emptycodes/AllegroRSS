@@ -1,0 +1,11 @@
+server:
+  rss_host: "localhost"
+  rss_port: 8080
+
+  # used only once by generate_api_token.py
+  auth_host: "localhost"
+  auth_port: 8080
+
+search:
+  limit: 60
+  only_regular: FALSE
