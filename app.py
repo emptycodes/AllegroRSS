@@ -1,4 +1,4 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, abort
 from urllib.parse import unquote
 import logging
 import msgpack
@@ -99,7 +99,7 @@ def generaterss_html():
         full_path = url.split("https://allegro.pl")[1]
 
     else:
-        return ('', 422)
+        return abort(422)
 
     return generate_rss(full_path)
 

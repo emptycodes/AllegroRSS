@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 import logging
 import yaml
 import requests
@@ -25,7 +25,7 @@ def get_tokens():
 
     code = request.args.get('code')
     if not code:
-        return ('', 401)
+        return abort(401)
 
     auth_token = b64encode(
                     bytes("{}:{}".format(secrets["secrets"]["client_id"],
