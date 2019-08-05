@@ -33,7 +33,6 @@ def adjust_api_and_web_filters(url, auth):
                 for api_values in api_filter["values"]:
                     if api_values["name"] == web_filter["values"]["name"]:
 
-                          # RSS readers freendly
                         if web_filter["name"] in humanly_params:
                             humanly_params[web_filter["name"]] += ", " +\
                                 web_filter["values"]["name"]

@@ -72,7 +72,7 @@ def generate_rss(uri):
 
     feed = rfeed.Feed(
         title = title,
-        description = title,  # lazy boi
+        description = title,
         link = "https://allegro.pl" + uri,
         language = "pl-PL",
         items = rss_feed
