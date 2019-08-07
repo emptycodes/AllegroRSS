@@ -15,7 +15,7 @@ def description_builder(uri, known_searches, offer):
         if price != fixed_price:
             offer_type = "Licytacja z możliwością Kup teraz!"
 
-    description = "<div><strong>{} {} - {}</strong></div>".format(
+    description += "<div><strong>{} {} - {}</strong></div>".format(
         offer["sellingMode"]["price"]["amount"],
         offer["sellingMode"]["price"]["currency"],
         offer_type
