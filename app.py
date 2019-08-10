@@ -22,9 +22,10 @@ secrets_guardian = config.secrets()
 settings = config_guardian.read()
 secrets = secrets_guardian.read()
 
+known_searches = {}
 
 def generate_rss(uri):
-    global secrets, settings
+    global known_searches, secrets, settings
     
     life_time = secrets["secrets"]["updated"] + secrets["secrets"]["expires_in"]
     if life_time <= time.time():
@@ -32,18 +33,20 @@ def generate_rss(uri):
 
     auth = secrets["secrets"]["access_token"]
 
-    try:
-        with open("known_searches.msgp", "rb") as f:
-            known_searches = msgpack.unpack(f, raw=False)
-    except ValueError:
-        known_searches = {}
+    if settings["search"]["cache_file"]:
+        try:
+            with open("known_searches.msgp", "rb") as f:
+                known_searches = msgpack.unpack(f, raw=False)
+        except ValueError:
+            known_searches = {}
     
     if not uri in known_searches:
         filters = search.adjust_api_and_web_filters("https://allegro.pl" + uri, auth)
         known_searches[uri] = filters
 
-        with open("known_searches.msgp", "wb") as f:
-            msgpack.pack(known_searches, f)
+        if settings["search"]["cache_file"]:
+            with open("known_searches.msgp", "wb") as f:
+                msgpack.pack(known_searches, f)
 
     result = search.search(known_searches[uri]["api"], auth,
                            limit=settings["search"]["limit"])

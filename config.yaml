@@ -9,3 +9,4 @@ server:
 search:
   limit: 60
   only_regular: FALSE
+  file_cache: FALSE
