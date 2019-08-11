@@ -49,10 +49,10 @@ def generate_rss(uri):
                 msgpack.pack(known_searches, f)
 
     result = search.search(known_searches[uri]["api"], auth,
-                           limit=settings["search"]["limit"])
+                           limit=settings["search"]["search_results_limit"])
 
     offers = []
-    if not settings["search"]["only_regular"]:
+    if not settings["search"]["only_regular_offers"]:
         for offer in result["items"]["promoted"]:
             offers.append(offer)
     for offer in result["items"]["regular"]:

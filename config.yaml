@@ -7,6 +7,6 @@ server:
   auth_port: 8080
 
 search:
-  limit: 60
-  only_regular: FALSE
-  file_cache: FALSE
+  search_results_limit: 60
+  only_regular_offers: FALSE
+  cache_file: FALSE
