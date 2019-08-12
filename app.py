@@ -6,6 +6,7 @@ import time
 import rfeed
 
 import config
+from generate_api_token import generate_api_tokens
 from refresh_access_token import refresh_access_token
 from allegro import search
 
@@ -107,5 +108,9 @@ def generaterss_html():
     return generate_rss(full_path)
 
 if __name__ == "__main__":
+    if not "access_token" in secrets["secrets"]:
+        generate_api_tokens()
+        secrets = secrets_guardian.read()
+
     app.run(host=settings["server"]["rss_host"], 
             port=settings["server"]["rss_port"])

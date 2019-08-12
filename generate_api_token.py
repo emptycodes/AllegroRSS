@@ -13,6 +13,11 @@ app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+conifg_reader = config.config()
+settings = conifg_reader.read()
+
+secrets_guardian = config.secrets()
+secrets = secrets_guardian.read()
 
 def get_authorize_link(client_id, auth_host, auth_port):
     print("""\033[1mFor authorization and generate API Token, click below:\033[0m
@@ -21,7 +26,7 @@ def get_authorize_link(client_id, auth_host, auth_port):
 
 @app.route("/", methods=['GET'])
 def get_tokens():
-    global config, secrets, secrets_guardian
+    global settings, secrets, secrets_guardian
 
     code = request.args.get('code')
     if not code:
@@ -43,12 +48,11 @@ def get_tokens():
                         "grant_type": "authorization_code",
                         "code": code,
                         "redirect_uri": "http://{}:{}".format(
-                            config["server"]["auth_host"],
-                            config["server"]["auth_port"]
+                            settings["server"]["auth_host"],
+                            settings["server"]["auth_port"]
                         )
                     })
     if r.status_code != 200:
-        print(r.status_code)
         raise exceptions.AuthError("Code has expiration time 10 seconds")
     
     auth_tokens = r.json()
@@ -58,12 +62,16 @@ def get_tokens():
 
     secrets_guardian.update(auth_tokens)
 
+    func_shutdown = request.environ.get('werkzeug.server.shutdown')
+    if func_shutdown is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func_shutdown()
+
     print("\033[1mEverything has been configured! GLHF!\033[0m")
     return ('Done!', 200)
 
-if __name__ == "__main__":
-    secrets_guardian = config.secrets()
-    secrets = secrets_guardian.read()
+def generate_api_tokens():
+    global secrets_guardian, secrets, conifg_reader, settings
 
     try:
         if secrets["secrets"]["client_id"] == "" or secrets["secrets"]["client_secret"] == "":
@@ -71,12 +79,12 @@ if __name__ == "__main__":
     except TypeError:
         raise exceptions.ConfigError("Config file is empty!")
 
-    conifg_reader = config.config()
-    config = conifg_reader.read()
-
     get_authorize_link(secrets["secrets"]["client_id"], 
-                       config["server"]["auth_host"], 
-                       config["server"]["auth_port"])
+                       settings["server"]["auth_host"], 
+                       settings["server"]["auth_port"])
 
-    app.run(host=config["server"]["auth_host"], 
-            port=config["server"]["auth_port"])
+    app.run(host=settings["server"]["auth_host"],
+            port=settings["server"]["auth_port"])
+
+if __name__ == "__main__":
+    generate_api_tokens()

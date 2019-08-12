@@ -21,7 +21,7 @@
 </p>
 
 ## About the project
-Allegro disabled the possibility of makimg your own RSS channel in 2018. A lot of people used this for all time notifications about occasions. Lately [similiar project](https://github.com/MK-PL/AllegroRSS), based on web-scrapping, JS and... Electron(?) which is ineffective was created by [MK-PL]("https://github.com/MK-PL")
+Allegro disabled the possibility of making your own RSS channel in 2018. A lot of people used this for all time notifications about occasions. Lately [similiar project](https://github.com/MK-PL/AllegroRSS), based on web-scrapping, JS and... Electron(?) which is ineffective was created by [MK-PL]("https://github.com/MK-PL")
 
 Requesting information for the first time will take ~3s, then (since the cache for filters was made) it will take ~0.5s!
 
@@ -72,7 +72,7 @@ Hubert "empty" Śliwiński - contact@empty.codes
 [forks-shield]: https://img.shields.io/github/forks/emptycodes/AllegroRSS.svg?style=flat-square
 [forks-url]: https://github.com/emptycodes/AllegroRSS/network/members
 [stars-shield]: https://img.shields.io/github/stars/emptycodes/AllegroRSS.svg?style=flat-square
-[stars-url]: https://github.com/emtypcodes/AllegroRSS/stargazers
+[stars-url]: https://github.com/emptycodes/AllegroRSS/stargazers
 [issues-shield]: https://img.shields.io/github/issues/emptycodes/AllegroRSS.svg?style=flat-square
 [issues-url]: https://github.com/emptycodes/AllegroRSS/issues
 [license-shield]: https://img.shields.io/github/license/emptycodes/AllegroRSS?style=flat-square
