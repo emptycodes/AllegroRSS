@@ -5,7 +5,7 @@ import msgpack
 import time
 import rfeed
 
-import config
+from config import Settings, Secrets
 from generate_api_token import generate_api_tokens
 from refresh_access_token import refresh_access_token
 from allegro import search
@@ -17,10 +17,9 @@ app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-config_guardian = config.config()
-secrets_guardian = config.secrets()
+settings = Settings().read()
 
-settings = config_guardian.read()
+secrets_guardian = Secrets()
 secrets = secrets_guardian.read()
 
 known_searches = {}
@@ -72,7 +71,7 @@ def generate_rss(uri):
         ))
     
     title = "{} w kategorii {}".format(known_searches[uri]["api"]["phrase"].title(), 
-                known_searches[uri]["humanly"]["category.name"].title())
+                                       known_searches[uri]["humanly"]["category.name"].title())
 
     feed = rfeed.Feed(
         title = title,
@@ -112,5 +111,5 @@ if __name__ == "__main__":
         generate_api_tokens()
         secrets = secrets_guardian.read()
 
-    app.run(host=settings["server"]["rss_host"], 
+    app.run(host=settings["server"]["rss_host"],
             port=settings["server"]["rss_port"])

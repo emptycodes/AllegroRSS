@@ -6,9 +6,7 @@ def load_env_vars(config_dict):
         env_var = os.environ.get(var_name.upper())
 
         if env_var != None:
-            if config_dict[var_name] == True or\
-            config_dict[var_name] == False:
-
+            if type(config_dict[var_name]) is bool:
                 if env_var.upper() == "TRUE":
                     env_var = True
                 
@@ -29,7 +27,7 @@ def load_env_vars(config_dict):
   
     return config_dict
 
-class config():
+class Settings():
     def read(self):
         with open("config.yaml", "r") as f:
             try:
@@ -48,7 +46,7 @@ class config():
 
         return config
 
-class secrets():
+class Secrets():
     def read(self):
         with open("secrets.yaml", "r") as f:
             try:

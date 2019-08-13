@@ -2,15 +2,14 @@ import requests
 import json
 import yaml
 
-import config
+from config import Settings, Secrets
 from allegro.exceptions import AuthError
 
 
 def refresh_access_token():
-    config_guardian = config.config()
-    secrets_guardian = config.secrets()
+    secrets_guardian = Secrets()
 
-    settings = config_guardian.read()
+    settings = Settings().read()
     secrets = secrets_guardian.read()
 
     r = requests.post("https://allegro.pl/auth/oauth/token",

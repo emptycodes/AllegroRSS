@@ -3,20 +3,18 @@ import logging
 import yaml
 import requests
 from base64 import b64encode
-import json
 import time
 
-import config
+from config import Settings, Secrets
 from allegro import exceptions
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-conifg_reader = config.config()
-settings = conifg_reader.read()
+settings = Settings().read()
 
-secrets_guardian = config.secrets()
+secrets_guardian = Secrets()
 secrets = secrets_guardian.read()
 
 def get_authorize_link(client_id, auth_host, auth_port):
@@ -56,7 +54,7 @@ def get_tokens():
         raise exceptions.AuthError("Code has expiration time 10 seconds")
     
     auth_tokens = r.json()
-    
+
     auth_tokens["authorization"] = auth_token
     auth_tokens["updated"] = int(time.time())
 
@@ -71,7 +69,7 @@ def get_tokens():
     return ('Done!', 200)
 
 def generate_api_tokens():
-    global secrets_guardian, secrets, conifg_reader, settings
+    global secrets_guardian, secrets, settings
 
     try:
         if secrets["secrets"]["client_id"] == "" or secrets["secrets"]["client_secret"] == "":

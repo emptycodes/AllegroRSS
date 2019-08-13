@@ -1,6 +1,4 @@
 import requests
-from pprint import pprint
-import json
 import yaml
 from allegro.get_web_filters import get_web_filters
 from urllib.parse import urlparse, parse_qs
@@ -52,16 +50,11 @@ def adjust_api_and_web_filters(url, auth):
                                 web_filter["values"]["value"]
                         
                         if filter_id in api_filter:
-                            if type(api_requests_params[filter_id]) == "list":
+                            if type(api_requests_params[filter_id]) is list:
                                 api_requests_params[filter_id]
 
-                        if api_filter["type"] == "NUMERIC" or\
-                           api_filter["type"] == "TEXT" or\
-                           api_filter["type"] == "LOCATION":
-
-                            print(web_filters)
+                        if api_filter["type"] in ["NUMERIC", "TEXT", "LOCATION"]:
                             value = web_filter["values"]["value"]
-                        
                         else:
                             value = api_values["value"]
 
@@ -81,7 +74,7 @@ def adjust_api_and_web_filters(url, auth):
 
         api_requests_params["category.id"] = category["id"]
         humanly_params["category.name"] = category["name"]
-    
+
     if phrase:
         api_requests_params["phrase"] = phrase
 
@@ -90,7 +83,7 @@ def adjust_api_and_web_filters(url, auth):
 
 def search(filters, auth, limit=60):
     params = {
-          # limit in range of 1 to 100 
+          # limit in range of 1 to 100
         "limit": limit,
         "sort": "-startTime"
     }
