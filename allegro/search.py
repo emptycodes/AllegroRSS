@@ -1,5 +1,4 @@
 import requests
-import yaml
 from allegro.get_web_filters import get_web_filters
 from urllib.parse import urlparse, parse_qs
 
@@ -10,8 +9,6 @@ def adjust_api_and_web_filters(url, auth):
     url_parsed = urlparse(url)
 
     if "kategoria" in url_parsed.path:
-        """ /kategoria/laptopy-ibm-lenovo-77920
-            -> laptopy-ibm-lenovo-77920 """
         category_id = url_parsed.path.split("/")[2]
     else:
         category_id = None
@@ -20,66 +17,68 @@ def adjust_api_and_web_filters(url, auth):
 
     api_search = search({
         "phrase": phrase,
-        "category.id": category_id
-    }, auth)
+        "category.id": category_id,
+    }, auth, limit=1)
 
-    humanly_params = {}
-    api_requests_params = {}
+    result = {
+        "api": {},
+        "humanly": {}
+    }
+
+    web_filters_list = [web_filter for web_filter in web_filters]
     for api_filter in api_search["filters"]:
-        for web_filter in web_filters:
-            if api_filter["name"] == web_filter["name"]:
-                for api_values in api_filter["values"]:
-                    if api_values["name"] == web_filter["values"]["name"]:
+        if api_filter["name"] in web_filters_list:
 
-                        if web_filter["name"] in humanly_params:
-                            humanly_params[web_filter["name"]] += ", " +\
-                                web_filter["values"]["name"]
-                        else:
-                            if web_filter["name"] == web_filter["values"]["name"]:
-                                humanly_params[web_filter["name"]] =\
-                                    web_filter["values"]["value"]
-                            else:
-                                humanly_params[web_filter["name"]] =\
-                                    web_filter["values"]["name"]
+            value = None
+            if isinstance(web_filters[api_filter["name"]], dict):
+                for api_value in api_filter["values"]:
+                    name = api_value["name"]
 
-                        filter_id = api_filter["id"]
-                        if "idSuffix" in api_values:
-                            filter_id = filter_id + api_values["idSuffix"]
+                    if name in web_filters[api_filter["name"]]:
+                        key = api_filter["id"] + api_value["idSuffix"]
+                        value = web_filters[api_filter["name"]][name]
 
-                            humanly_params[web_filter["name"]] += " " +\
-                                web_filter["values"]["value"]
+                        result["api"][key] = value
                         
-                        if filter_id in api_filter:
-                            if type(api_requests_params[filter_id]) is list:
-                                api_requests_params[filter_id]
-
-                        if api_filter["type"] in ["NUMERIC", "TEXT", "LOCATION"]:
-                            value = web_filter["values"]["value"]
+                        if not api_filter["name"] in result["humanly"]:
+                            result["humanly"][api_filter["name"]] =\
+                                "{} {}".format(name, value)
                         else:
-                            value = api_values["value"]
+                            result["humanly"][api_filter["name"]] +=\
+                                ", {} {}".format(name, value)
+            else:
+                key = api_filter["id"]
+            
+            if not value:
+                if api_filter in ["NUMERIC", "TEXT", "LOCATION"]:
+                    value = web_filters[api_filter["name"]][0]
+                    result["humanly"][api_filter["name"]] = value
 
-                        if filter_id in api_requests_params:
-                            if type(filter_id) is list:
-                                api_requests_params[filter_id].append(value)
+                else:
+                    values = []
+                    for api_value in api_filter["values"]:
+                        name = api_value["name"]
+                        if name in web_filters[api_filter["name"]]:
+                            values.append(api_value["value"])
+
+                            if not api_filter["name"] in result["humanly"]:
+                                result["humanly"][api_filter["name"]] = name
                             else:
-                                api_requests_params[filter_id] = \
-                                    [api_requests_params[filter_id], value]
-
-                        else:
-                            api_requests_params[filter_id] = value
-                            
+                                result["humanly"][api_filter["name"]] +=\
+                                    ", " + name
+                    
+                result["api"][key] = values
 
     if "path" in api_search["categories"]:
         category = api_search["categories"]["path"][-1]
 
-        api_requests_params["category.id"] = category["id"]
-        humanly_params["category.name"] = category["name"]
+        result["api"]["category.id"] = category["id"]
+        result["humanly"]["category.name"] = category["name"]
 
     if phrase:
-        api_requests_params["phrase"] = phrase
+        result["api"]["phrase"] = phrase
 
-    return {"api": api_requests_params,
-            "humanly": humanly_params}
+    return result
 
 def search(filters, auth, limit=60):
     params = {

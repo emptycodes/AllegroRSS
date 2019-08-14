@@ -11,24 +11,19 @@ def get_web_filters(link):
         if script.text[:34] == "window.__listing_FiltersStoreState":
             data = json.loads(script.text[36:])
     
-    chosen_filters = []
+    chosen_filters = {}
     for slot in data["slots"]:
         for filters in slot["filters"]:
             for filter_value in filters["filterValues"]:
                 if filter_value["selected"]:
-                    chosen_filter = {
-                        "name": filters["name"], 
-                        "values": {
-                            "name": filter_value["name"],
-                        }
-                    }
+                    if not filters["type"] in ["NUMERIC", "TEXT", "LOCATION"]:
+                        if not filters["name"] in chosen_filters:
+                            chosen_filters[filters["name"]] = []
+                        chosen_filters[filters["name"]].append(filter_value["name"])
 
-                    if filters["type"] == "NUMERIC" or\
-                       filters["type"] == "TEXT" or\
-                       filters["type"] == "LOCATION":
-
-                        chosen_filter["values"]["value"] = filter_value["value"]
-
-                    chosen_filters.append(chosen_filter)
+                    else:
+                        if not filters["name"] in chosen_filters:
+                            chosen_filters[filters["name"]] = {}
+                        chosen_filters[filters["name"]][filter_value["name"]] = filter_value["value"]
 
     return chosen_filters
