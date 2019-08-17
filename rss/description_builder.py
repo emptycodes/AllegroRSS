@@ -2,17 +2,19 @@ from rss import timedelta_pl
 
 def description_builder(uri, known_searches, offer):
     description = ""
+
     offer_type = {
         "BUY_NOW": {"name": "Kup teraz!",
                     "state": False},
         "AUCTION": {"name": "Licytacja",
-                    "state": False}
+                    "state": False},
+        "ADVERTISEMENT": {"name": "Reklama",
+                          "state": False}
     }
-    
-    if offer["sellingMode"]["format"] == "BUY_NOW":
-        offer_type["BUY_NOW"]["state"] = True
-    else:
-        offer_type["BUY_NOW"]["state"] = True
+
+    for selling_mode in offer_type:
+        offer_type[selling_mode]["state"] =\
+            offer["sellingMode"]["format"] == selling_mode
 
     if "fixedPrice" in offer["sellingMode"]:
         price = offer["sellingMode"]["price"]["amount"]
