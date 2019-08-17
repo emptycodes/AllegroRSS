@@ -1,12 +1,14 @@
 import yaml
 import os
 
+from allegro import exceptions
+
 def load_env_vars(config_dict):
     for var_name in config_dict:
         env_var = os.environ.get(var_name.upper())
 
         if env_var != None:
-            if type(config_dict[var_name]) is bool:
+            if isinstance(config_dict[var_name], bool):
                 if env_var.upper() == "TRUE":
                     env_var = True
                 
@@ -47,6 +49,7 @@ class Settings():
         return config
 
 class Secrets():
+    @classmethod
     def read(self):
         with open("secrets.yaml", "r") as f:
             try:
@@ -63,6 +66,11 @@ class Secrets():
                 secrets["secrets"][loaded_env_var] =\
                     loaded_env_vars[loaded_env_var]
 
+        if not secrets["secrets"]["client_id"] and\
+           not secrets["secrets"]["client_secret"]:
+
+            exceptions.SecretsError("You forgot about clients ID and secret!")
+
         return secrets
 
     def update(self, refreshed_tokens):
@@ -75,5 +83,5 @@ class Secrets():
                 yaml.dump(secrets, f)
             except yaml.YAMLError as exc:
                 print(exc)
-        
+
         return secrets
