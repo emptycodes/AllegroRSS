@@ -1,12 +1,17 @@
-import requests
+import asyncio
+import aiohttp
 
-
-def get_web_filters(link):
-    r = requests.get(link, headers={
+async def get_web_filters(link):
+    headers = {
         "Accept": "application/json"
-    })
+    }
 
-    data = r.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get(link, headers=headers) as resp:
+            if resp.status != 200:
+                print(resp.text, resp.status)
+            else:
+                data = await resp.json()
 
     chosen_filters = {}
     for filters in data["listing"]["filters"]:

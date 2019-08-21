@@ -1,11 +1,11 @@
-import requests
 from allegro.get_web_filters import get_web_filters
 from urllib.parse import urlparse, parse_qs
 
+import asyncio
+import aiohttp
+from multidict import MultiDict
 
-def adjust_api_and_web_filters(url, auth):
-    web_filters = get_web_filters(url)
-
+async def adjust_api_and_web_filters(url, auth):
     url_parsed = urlparse(url)
 
     if "kategoria" in url_parsed.path:
@@ -15,10 +15,16 @@ def adjust_api_and_web_filters(url, auth):
 
     phrase = parse_qs(url_parsed.query)["string"][0]
 
-    api_search = search({
-        "phrase": phrase,
-        "category.id": category_id,
-    }, auth, limit=1)
+    loop = asyncio.get_event_loop()
+    web_filters, api_search = loop.run_until_complete(
+        asyncio.gather(
+            get_web_filters(url),
+            search({
+                "phrase": phrase,
+                "category.id": category_id,
+            }, auth, limit=1)
+        )
+    )
 
     result = {
         "api": {},
@@ -80,7 +86,7 @@ def adjust_api_and_web_filters(url, auth):
 
     return result
 
-def search(filters, auth, limit=60):
+async def search(filters, auth, limit=60):
     params = {
           # limit in range of 1 to 100
         "limit": limit,
@@ -88,17 +94,28 @@ def search(filters, auth, limit=60):
     }
 
     for key in filters:
-        params[key] = filters[key]
+        if not filters[key] == None:
+            params[key] = filters[key]
+    
+    params_list = []
+    for key, value in params.items():
+        if isinstance(value, list):
+            for listed_values in value:
+                params_list.append([key, listed_values])
+        else:
+            params_list.append([key, value])
 
-    r = requests.get("https://api.allegro.pl/offers/listing",
-                     params=params,
-                     headers={
-                         "Authorization": "Bearer {}".format(auth),
-                         "accept": "application/vnd.allegro.public.v1+json",
-                         "content-type": "application/vnd.allegro.public.v1+json"
-                     })
+    headers = {
+        "Authorization": "Bearer {}".format(auth),
+        "accept": "application/vnd.allegro.public.v1+json",
+        "content-type": "application/vnd.allegro.public.v1+json"
+    }
 
-    if r.status_code != 200:
-        print(r.content, r.status_code)
-
-    return r.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.get("https://api.allegro.pl/offers/listing",
+                                params=params_list,
+                                headers=headers) as resp:
+            if resp.status != 200:
+                print(resp.text, resp.status)
+            else:
+                return await resp.json()

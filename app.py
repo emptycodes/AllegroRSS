@@ -4,6 +4,9 @@ import logging
 import msgpack
 import time
 import rfeed
+import asyncio
+import nest_asyncio
+nest_asyncio.apply()
 
 from config import Settings, Secrets
 from generate_api_token import get_authorize_link, get_tokens
@@ -24,12 +27,16 @@ secrets = secrets_guardian.read()
 
 known_searches = {}
 
-def generate_rss(uri):
-    global known_searches, secrets, settings
 
-    if not "access_token" in secrets["secrets"]:
-        return redirect("/", code=302)
+def generate_rss(uri):
+    global known_searches, secrets_guardian, secrets, settings
     
+    loop = asyncio.new_event_loop()
+    if not "access_token" in secrets["secrets"]:
+        secrets = secrets_guardian.read()
+        if not "access_token" in secrets["secrets"]:
+            return redirect("/", code=302)
+
     life_time = secrets["secrets"]["updated"] + secrets["secrets"]["expires_in"]
     if life_time <= time.time():
         auth_host = request.host
@@ -45,15 +52,20 @@ def generate_rss(uri):
             known_searches = {}
     
     if not uri in known_searches:
-        filters = search.adjust_api_and_web_filters("https://allegro.pl" + uri, auth)
+        filters = loop.run_until_complete(
+            search.adjust_api_and_web_filters("https://allegro.pl" + uri, auth)
+        )
+
         known_searches[uri] = filters
 
         if settings["search"]["cache_file"]:
             with open("known_searches.msgp", "wb") as f:
                 msgpack.pack(known_searches, f)
 
-    result = search.search(known_searches[uri]["api"], auth,
-                           limit=settings["search"]["search_results_limit"])
+    result = loop.run_until_complete(
+                search.search(known_searches[uri]["api"], auth,
+                              limit=settings["search"]["search_results_limit"])
+            )
 
     offers = []
     if not settings["search"]["only_regular_offers"]:
