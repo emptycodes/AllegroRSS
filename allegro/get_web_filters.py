@@ -14,7 +14,7 @@ async def get_web_filters(link):
                 data = await resp.json()
 
     chosen_filters = {}
-    for filters in data["listing"]["filters"]:
+    for filters in data["Filtry"]["filters"]:
         filters_type = filters["filters"][0]["type"]
         for option in filters["filters"][0]['filterValues']:
             if option["selected"]:
