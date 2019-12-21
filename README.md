@@ -53,7 +53,7 @@ Add RSS channel to your reader! Ex. [TelegramRSS Bot](https://github.com/JuniorJ
 
 ## To-Do list
 
-- [ ] Dockerfile for the project!
+- [x] Dockerfile for the project!
 - [ ] Make possibility to hide promoted offers in URL (now this option is in `config.yaml` only)
 
 ## License
