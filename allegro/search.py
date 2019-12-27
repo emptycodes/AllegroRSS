@@ -3,17 +3,19 @@ from urllib.parse import urlparse, parse_qs
 
 import asyncio
 import aiohttp
-from multidict import MultiDict
 
 async def adjust_api_and_web_filters(url, auth):
     url_parsed = urlparse(url)
+    query_parsed = parse_qs(url_parsed.query)
 
     if "kategoria" in url_parsed.path:
         category_id = url_parsed.path.split("/")[2]
+    elif "id" in query_parsed:
+        category_id = query_parsed["id"][0]
     else:
         category_id = None
 
-    phrase = parse_qs(url_parsed.query)["string"][0]
+    phrase = query_parsed["string"][0]
 
     loop = asyncio.get_event_loop()
     web_filters, api_search = loop.run_until_complete(

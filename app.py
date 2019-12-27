@@ -126,6 +126,10 @@ def authorize_oauth():
 def listing():
     return generate_rss(request.full_path)
 
+@application.route("/listing/listing.php", methods=['GET'])
+def listing_php():
+    return generate_rss(request.full_path)
+
 @application.route("/kategoria/<category_id>", methods=['GET'])
 def kategoria(category_id):
     return generate_rss(request.full_path)
