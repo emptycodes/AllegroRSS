@@ -51,7 +51,7 @@ class Settings():
 class Secrets():
     @classmethod
     def read(self):
-        with open("secrets.yaml", "r") as f:
+        with open("secrets/secrets.yaml", "r") as f:
             try:
                 secrets = yaml.safe_load(f)
             except yaml.YAMLError as exc:
@@ -78,7 +78,7 @@ class Secrets():
         for key in refreshed_tokens:
             secrets["secrets"][key] = refreshed_tokens[key]
 
-        with open("secrets.yaml", "w") as f:
+        with open("secrets/secrets.yaml", "w") as f:
             try:
                 yaml.dump(secrets, f)
             except yaml.YAMLError as exc:

@@ -46,7 +46,7 @@ def generate_rss(uri):
 
     if settings["search"]["cache_file"]:
         try:
-            with open("known_searches.msgp", "rb") as f:
+            with open("secrets/known_searches.msgp", "rb") as f:
                 known_searches = msgpack.unpack(f, raw=False)
         except ValueError:
             known_searches = {}
@@ -59,7 +59,7 @@ def generate_rss(uri):
         known_searches[uri] = filters
 
         if settings["search"]["cache_file"]:
-            with open("known_searches.msgp", "wb") as f:
+            with open("secrets/known_searches.msgp", "wb") as f:
                 msgpack.pack(known_searches, f)
 
     result = loop.run_until_complete(
