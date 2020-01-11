@@ -1,4 +1,5 @@
 from flask import Flask, request, Response, abort, redirect
+from werkzeug.debug import DebuggedApplication
 from urllib.parse import unquote
 import logging
 import os
@@ -22,6 +23,8 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 settings = Settings().read()
+if settings["testing"]["debug"]:
+    application.wsgi_app = DebuggedApplication(application.wsgi_app, evalex=True)
 
 secrets_guardian = Secrets()
 secrets = secrets_guardian.read()
