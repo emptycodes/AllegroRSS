@@ -78,10 +78,14 @@ def generate_rss(uri):
     for offer in offers:
         description = description_builder(uri, known_searches, offer)
 
+        link = "https://allegro.pl/oferta/{}".format(offer["id"])
+        if offer.get("vendor"):
+            link = offer["vendor"]["url"]
+
         rss_feed.append(
             rfeed.Item(
                 title=offer["name"],
-                link="https://allegro.pl/oferta/{}".format(offer["id"]),
+                link=link,
                 description=description,
                 guid=rfeed.Guid("https://allegro.pl/oferta/{}".format(offer["id"])),
         ))
