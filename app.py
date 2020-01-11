@@ -1,6 +1,7 @@
 from flask import Flask, request, Response, abort, redirect
 from urllib.parse import unquote
 import logging
+import os
 import msgpack
 import time
 import rfeed
@@ -45,6 +46,8 @@ def generate_rss(uri):
     auth = secrets["secrets"]["access_token"]
 
     if settings["search"]["cache_file"]:
+        if not os.path.isfile("secrets/known_searches.msgp"):
+            open("secrets/known_searches.msgp", "a").close()
         try:
             with open("secrets/known_searches.msgp", "rb") as f:
                 known_searches = msgpack.unpack(f, raw=False)

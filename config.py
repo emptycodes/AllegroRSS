@@ -51,12 +51,20 @@ class Settings():
 class Secrets():
     @classmethod
     def read(self):
-        with open("secrets/secrets.yaml", "r") as f:
-            try:
+        try:
+            with open("secrets/secrets.yaml", "r") as f:
                 secrets = yaml.safe_load(f)
-            except yaml.YAMLError as exc:
-                print(exc)
-        
+        except FileNotFoundError:
+            with open("secrets/secrets.yaml", 'w') as f:
+                secrets = {
+                    "secrets": {
+                        "client_id": "",
+                        "client_secret": "",
+                }}
+                yaml.dump(secrets, f)
+        except yaml.YAMLError as exc:
+            print(exc)
+
         important_vars = {"client_id": None,
                           "client_secret": None}
 
