@@ -115,8 +115,12 @@ def generate_rss(uri):
                 guid=rfeed.Guid("https://allegro.pl/oferta/{}".format(offer["id"])),
         ))
     
-    title = "{} w kategorii {}".format(known_searches[uri]["api"]["phrase"].title(),
-                                       known_searches[uri]["humanly"]["category.name"].title())
+    if "phrase" in known_searches[uri]["api"]:
+        phrase = known_searches[uri]["api"]["phrase"].title()
+    else:
+        phrase = "Wszystko"
+
+    title = "{} w kategorii {}".format(phrase, known_searches[uri]["humanly"]["category.name"].title())
 
     feed = rfeed.Feed(
         title = title,

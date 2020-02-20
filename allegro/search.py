@@ -15,7 +15,10 @@ async def adjust_api_and_web_filters(url, auth):
     else:
         category_id = None
 
-    phrase = query_parsed["string"][0]
+    if "string" in query_parsed:
+        phrase = query_parsed["string"][0]
+    else:
+        phrase = None
 
     loop = asyncio.get_event_loop()
     web_filters, api_search = loop.run_until_complete(
