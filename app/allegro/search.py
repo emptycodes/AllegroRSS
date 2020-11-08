@@ -30,7 +30,7 @@ class AllegroListing:
 
         elements = self.data["items-v3-product"]["items"]["elements"]
         for element in elements:
-            if element["type"] != "label" or limit:
+            if element["type"] != "label" and limit:
                 if (
                     element["type"] != ["advertisement", "advert_external"]
                     and self.hide_ads
