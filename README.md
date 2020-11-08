@@ -23,24 +23,16 @@
 ## About the project
 Allegro disabled the possibility of making your own RSS channel in 2018. A lot of people used this for all time notifications about occasions. Lately [similiar project](https://github.com/MK-PL/AllegroRSS), based on web-scrapping, JS and... Electron(?) which is ineffective was created by [MK-PL]("https://github.com/MK-PL")
 
-Requesting information for the first time will take ~3s, then (since the cache for filters was made) it will take ~0.5s!
-
 ## Installation
-<p align="center">
-	<img src="img/register_app.png"/>
-</p>
 
-1. Login to Allegro.pl and go to [Register new Allegro app](https://apps.developer.allegro.pl/new)
-1. Choose right name for app and in form "Choose type of app" pick first option.
-1. In text form "URI adressess to redirect" write (for default config) "http://localhost:8080"
+Just install [Docker](https://docker.com) and docker-compose and type in terminal:
 
-<p align="center">
-	<img src="img/app_secrets.png"/>
-</p>
-
-Now copy *Client ID* and *Client Secret* to `secrets.yaml` and run `generate_api_token.py`.
-
-Now that you are done - run `app.py`, and go bargain hunting
+```
+git clone https://github.com/emptycodes/AllegroRSS
+cd AllegroRSS
+docker-compose build
+docker-compose run
+```
 
 ## Usage
 <p align="center">

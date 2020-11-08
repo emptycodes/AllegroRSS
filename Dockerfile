@@ -1,14 +1,24 @@
-FROM python:3-slim
+FROM alpine:3.12.1
+EXPOSE 8000
+WORKDIR /usr/src/app
 
-LABEL maintainer="contact@empty.codes"
+RUN apk add --no-cache \
+        uwsgi-python3 \
+        python3 \
+	py3-pip
 
-LABEL name="AllegroRSS"
-EXPOSE 80
+COPY . .
 
-WORKDIR /app
-COPY . /app
+RUN pip3 install -r requirements.txt
 
-VOLUME ["/app/secrets"]
+ENV FLASK_APP app
+ENV FLASK_ENV production
 
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
-CMD ["gunicorn", "app:application", "--bind", "0.0.0.0:80"]
+STOPSIGNAL SIGINT
+CMD exec uwsgi --http-socket 0.0.0.0:8000 \
+               --processes 4 \
+               --uid uwsgi \
+               --buffer-size 65535 \
+               --plugins python3 \
+               --wsgi app.wsgi:application \
+               --touch-reload app/wsgi.py

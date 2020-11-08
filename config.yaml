@@ -1,6 +1,0 @@
-search:
-  cache_file: false
-  only_regular_offers: false
-  search_results_limit: 60
-testing:
-  debug: false
