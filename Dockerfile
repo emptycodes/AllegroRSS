@@ -7,9 +7,12 @@ RUN apk add --no-cache \
         python3 \
 	py3-pip
 
-COPY . .
 
+ADD requirements.txt .
 RUN pip3 install -r requirements.txt
+
+COPY --chown=nobody:nogroup . .
+USER nobody
 
 ENV FLASK_APP app
 ENV FLASK_ENV production
