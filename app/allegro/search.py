@@ -124,9 +124,14 @@ class AllegroOffer:
         else:
             return None
 
-    def get_parameters(self):
+    @property
+    def parameters(self):
         if "parameters" in self.data:
-            return self.data["parameters"]
+            parameters = {}
+            for parameter in self.data["parameters"]:
+                parameters[parameter["name"]] = ", ".join(parameter["values"])
+
+            return parameters
 
         else:
             return None

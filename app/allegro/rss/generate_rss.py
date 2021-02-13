@@ -1,5 +1,5 @@
 from rfeed import *
-from .description_builder import description_builder
+from .description_builder import description_builder, dict_to_html_list
 
 
 def generate_rss(listing, uri):
@@ -18,7 +18,7 @@ def generate_rss(listing, uri):
     title = "{} w kategorii {}".format(listing.phrase, category)
     feed = rfeed.Feed(
         title=title,
-        description=str(listing.filters),
+        description=dict_to_html_list(listing.filters),
         link="https://allegro.pl" + uri,
         language="pl-PL",
         items=items,

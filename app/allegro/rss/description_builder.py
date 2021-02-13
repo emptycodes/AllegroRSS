@@ -1,6 +1,15 @@
 from . import timedelta
 
 
+def dict_to_html_list(elements):
+    html_list = "<ul>"
+    for key, value in elements.items():
+        html_list += "<li><b>{}:</b> {}</li>".format(
+                key, value
+            )
+    html_list += "</ul>"
+    return html_list
+
 def description_builder(offer):
     description = ""
 
@@ -35,11 +44,6 @@ def description_builder(offer):
 
     description += "<div>Ilość dostępnych sztuk: {}</div>".format(offer.quantity)
 
-    description += "<ul>"
-    for parameter in offer.parameters:
-        description += "<li><b>{}</b>: {}</li>".format(
-            parameter["name"], str(parameter["values"])[1:-1]
-        )
-    description += "</ul>"
+    description += dict_to_html_list(offer.parameters)
 
     return description
