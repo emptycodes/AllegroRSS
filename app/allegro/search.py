@@ -20,11 +20,8 @@ class AllegroListing:
         self.hide_ads = hide_ads
         self.uri = uri
 
-        self.category = self.get_category()
-        self.filters = self.get_filters()
-        self.offers = self.get_offers()
-
-    def get_offers(self):
+    @property
+    def offers(self):
         offers = []
         limit = self.limit
 
@@ -40,22 +37,24 @@ class AllegroListing:
 
         return offers
 
-    def get_category(self):
+    @property
+    def category(self):
         if "categoryData" in self.data["dfp-dbb"]:
             return self.data["dfp-dbb"]["categoryData"]["name"]
 
         else:
             return None
 
-    def get_filters(self):
+    @property
+    def filters(self):
         filters = {}
 
         if self.data["listing"]["searchMeta"]["appliedFiltersCount"] > 0:
             for filter_ in self.data["chipsAboveFilters"]["filters"]:
                 for option in filter_["filters"]:
                     for value in option["filterValues"]:
-                        if value["selected"]:
-                            filters[option["name"]] = value["name"]
+                        if value["uiBehaviour"]["chip"]:
+                            filters[value["uiBehaviour"]["chip"]["label"]] = value["uiBehaviour"]["chip"]["value"]
 
         return filters
 
@@ -71,25 +70,23 @@ class AllegroOffer:
 
     def __init__(self, data):
         self.data = data
+        print(self.data)
 
         self.name = self.data["name"]
         self.type = self.data["type"]
         self.vendor = self.data["vendor"]
         self.quantity = self.data["quantity"]["value"]
-        self.parameters = self.get_parameters()
-        self.prices = self.get_prices()
-        self.cheapest_delivery = self.get_cheapest_delivery()
-        self.end_of_offer = self.get_end_of_offer()
-        self.url = self.get_url()
 
-    def get_url(self):
+    @property
+    def url(self):
         if self.vendor != "allegro":
             return self.data["url"]
 
         else:
             return "https://allegro.pl/oferta/" + self.data["id"]
 
-    def get_prices(self):
+    @property
+    def prices(self):
         prices = {}
 
         for sellingMode in self.data["sellingMode"]:
@@ -102,7 +99,8 @@ class AllegroOffer:
 
         return prices
 
-    def get_cheapest_delivery(self):
+    @property
+    def cheapest_delivery(self):
         cheapest_delivery = {"amount": 0.00, "currency": "PLN"}
 
         if self.data["shipping"]["freeDelivery"]:
@@ -118,7 +116,8 @@ class AllegroOffer:
         #  Only in-person pickup
         return None
 
-    def get_end_of_offer(self):
+    @property
+    def end_of_offer(self):
         if "publication" in self.data:
             return self.data["publication"]["endingTime"]
 
