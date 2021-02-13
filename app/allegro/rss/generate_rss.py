@@ -7,7 +7,8 @@ def generate_rss(listing, uri):
     for offer in listing.offers:
         items.append(
             Item(
-                title=offer.name, link=offer.url, description=description_builder(offer)
+                title=offer.name, link=offer.url, description=description_builder(offer),
+                guid=Guid(offer.url)
             )
         )
 
