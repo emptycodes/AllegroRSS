@@ -28,7 +28,7 @@ class AllegroListing:
         offers = []
         limit = self.limit
 
-        elements = self.data["items-v3-product"]["items"]["elements"]
+        elements = self.data["items-v3"]["items"]["elements"]
         for element in elements:
             if element["type"] != "label" and limit:
                 if (
